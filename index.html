@@ -1,117 +1,126 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Katalog</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <style>
-        body { margin: 0; padding: 0; background: #333; font-family: sans-serif; overflow-x: hidden; }
-        .controls { 
-            position: fixed; top: 0; left: 0; right: 0; 
-            background: rgba(0,0,0,0.8); color: white; padding: 10px; 
-            display: flex; justify-content: center; gap: 10px; z-index: 10;
-        }
-        #pdf-container { width: 100%; margin-top: 50px; display: flex; justify-content: center; }
-        canvas { display: block; max-width: 100%; height: auto !important; }
-        button { cursor: pointer; padding: 5px 15px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" />
+  <title>PDF Viewer</title>
+  <style>
+    * { margin: 0; padding: 0; }
+    .top-bar { background: #333; color: #fff; padding: 1rem; position: fixed; top: 0; width: 100%; z-index: 10; display: flex; justify-content: center; align-items: center; }
+    .btn { background: coral; color: #fff; border: none; outline: none; cursor: pointer; padding: 0.7rem 2rem; margin: 0 0.5rem; transition: opacity 0.3s; }
+    .btn:hover { opacity: 0.8; }
+    .page-info { margin-left: 1rem; }
+    .canvas-container { width: 100%; margin-top: 80px; display: flex; justify-content: center; background: #525659; min-height: 100vh; }
+    canvas { max-width: 100%; display: block; }
+    body { overflow-x: hidden; background: #525659; }
+  </style>
 </head>
 <body>
+  <div class="top-bar">
+    <button class="btn" id="prev-page">
+      <i class="fas fa-arrow-circle-left"></i> Prev Page
+    </button>
+    <button class="btn" id="next-page">
+      Next Page <i class="fas fa-arrow-circle-right"></i>
+    </button>
+    <span class="page-info">
+      Page <span id="page-num"></span> of <span id="page-count"></span>
+    </span>
+  </div>
 
-    <div class="controls">
-        <button id="prev-page">Předchozí</button>
-        <span id="page-info">Strana <span id="page-num">1</span> z <span id="page-count">0</span></span>
-        <button id="next-page">Další</button>
-    </div>
+  <div class="canvas-container">
+    <canvas id="pdf-render"></canvas>
+  </div>
 
-    <div id="pdf-container">
-        <canvas id="pdf-render"></canvas>
-    </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <script>
+    // 1. Získání parametrů z URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const fileName = urlParams.get('file') || 'data'; // Pokud v URL není ?file=, načte data.pdf
+    const url = `${fileName}.pdf`;
 
-    <script>
-        // --- 1. LOGIKA PRO VÍCE KATALOGŮ PŘES URL ---
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        // Získá název souboru z adresy ?file=neco (pokud není, použije 'data.pdf')
-        const fileName = urlParams.get('file') || 'data'; 
-        const url = `${fileName}.pdf`; 
+    let pdfDoc = null,
+      pageNum = parseInt(urlParams.get('page')) || 1,
+      pageIsRendering = false,
+      pageNumIsPending = null;
 
-        // --- 2. NASTAVENÍ PDF.JS ---
-        let pdfDoc = null,
-            pageNum = parseInt(urlParams.get('page')) || 1,
-            pageIsRendering = false,
+    const canvas = document.querySelector('#pdf-render'),
+      ctx = canvas.getContext('2d');
+
+    // 2. Vykreslení stránky s automatickým přizpůsobením šířce
+    const renderPage = num => {
+      pageIsRendering = true;
+
+      pdfDoc.getPage(num).then(page => {
+        // --- AUTO ZOOM LOGIKA ---
+        const containerWidth = window.innerWidth; // Přizpůsobí se šířce okna
+        const unscaledViewport = page.getViewport({ scale: 1 });
+        const scale = containerWidth / unscaledViewport.width;
+        const viewport = page.getViewport({ scale: scale });
+        // ------------------------
+
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderCtx = {
+          canvasContext: ctx,
+          viewport
+        };
+
+        page.render(renderCtx).promise.then(() => {
+          pageIsRendering = false;
+          if (pageNumIsPending !== null) {
+            renderPage(pageNumIsPending);
             pageNumIsPending = null;
-
-        const canvas = document.querySelector('#pdf-render'),
-              ctx = canvas.getContext('2d');
-
-        // --- 3. FUNKCE PRO VYKRESLENÍ (AUTOMATICKÝ ZOOM) ---
-        const renderPage = num => {
-            pageIsRendering = true;
-
-            pdfDoc.getPage(num).then(page => {
-                // Výpočet šířky: vezme šířku okna prohlížeče
-                const windowWidth = window.innerWidth;
-                const unscaledViewport = page.getViewport({ scale: 1 });
-                
-                // Vypočítá scale tak, aby PDF zabralo 100% šířky (mínus malá rezerva)
-                const scale = (windowWidth) / unscaledViewport.width;
-                const viewport = page.getViewport({ scale: scale });
-
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-
-                const renderCtx = { canvasContext: ctx, viewport };
-
-                page.render(renderCtx).promise.then(() => {
-                    pageIsRendering = false;
-                    if (pageNumIsPending !== null) {
-                        renderPage(pageNumIsPending);
-                        pageNumIsPending = null;
-                    }
-                });
-
-                document.querySelector('#page-num').textContent = num;
-                
-                // Aktualizace URL bez reloadu stránky (volitelné)
-                const newUrl = `?file=${fileName}&page=${num}`;
-                window.history.replaceState({path:newUrl}, '', newUrl);
-            });
-        };
-
-        const queueRenderPage = num => {
-            if (pageIsRendering) { pageNumIsPending = num; } 
-            else { renderPage(num); }
-        };
-
-        // --- 4. OVLÁDÁNÍ ---
-        document.querySelector('#prev-page').addEventListener('click', () => {
-            if (pageNum <= 1) return;
-            pageNum--;
-            queueRenderPage(pageNum);
+          }
         });
 
-        document.querySelector('#next-page').addEventListener('click', () => {
-            if (pageNum >= pdfDoc.numPages) return;
-            pageNum++;
-            queueRenderPage(pageNum);
-        });
+        document.querySelector('#page-num').textContent = num;
+      });
+    };
 
-        // Překreslení při otočení mobilu nebo změně velikosti okna
-        window.addEventListener('resize', () => {
-            if (pdfDoc) renderPage(pageNum);
-        });
+    const queueRenderPage = num => {
+      if (pageIsRendering) {
+        pageNumIsPending = num;
+      } else {
+        renderPage(num);
+      }
+    };
 
-        // --- 5. NABEHNUTÍ PDF ---
-        pdfjsLib.getDocument(url).promise.then(pdfDoc_ => {
-            pdfDoc = pdfDoc_;
-            document.querySelector('#page-count').textContent = pdfDoc.numPages;
-            renderPage(pageNum);
-        }).catch(err => {
-            console.error("Chyba při načítání PDF: ", err);
-            alert("Soubor " + url + " nebyl nalezen. Ujistěte se, že soubor existuje.");
-        });
-    </script>
+    // 3. Tlačítka
+    document.querySelector('#prev-page').addEventListener('click', () => {
+      if (pageNum <= 1) return;
+      pageNum--;
+      queueRenderPage(pageNum);
+    });
+
+    document.querySelector('#next-page').addEventListener('click', () => {
+      if (pageNum >= pdfDoc.numPages) return;
+      pageNum++;
+      queueRenderPage(pageNum);
+    });
+
+    // 4. Překreslení při změně velikosti okna (responzivita)
+    window.addEventListener('resize', () => {
+      if (pdfDoc) renderPage(pageNum);
+    });
+
+    // 5. Načtení PDF
+    pdfjsLib.getDocument(url).promise.then(pdfDoc_ => {
+      pdfDoc = pdfDoc_;
+      document.querySelector('#page-count').textContent = pdfDoc.numPages;
+      renderPage(pageNum);
+    }).catch(err => {
+      const div = document.createElement('div');
+      div.className = 'error';
+      div.style.color = 'white';
+      div.style.textAlign = 'center';
+      div.style.marginTop = '100px';
+      div.textContent = `Soubor "${url}" nebyl nalezen.`;
+      document.querySelector('.canvas-container').appendChild(div);
+    });
+  </script>
 </body>
 </html>
