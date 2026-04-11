@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Katalog Kospan 2026 – Obklady & Lamely</title>
+<title>Katalogy</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -19,19 +19,20 @@
     --border: rgba(200,169,110,0.2);
   }
 
+  html, body { height: 100%; overflow: hidden; }
+
   body {
     background: var(--bg);
     color: var(--text);
     font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center;
   }
 
   header {
-    width: 100%;
-    padding: 1.5rem 2rem;
+    flex-shrink: 0;
+    height: 52px;
+    padding: 0 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -41,188 +42,99 @@
 
   .logo {
     font-family: 'Playfair Display', serif;
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     color: var(--accent);
-    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  .logo span {
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-left: 0.6rem;
   }
 
-  .logo span { color: var(--muted); font-size: 0.85rem; font-family: 'DM Sans', sans-serif; display: block; font-weight: 300; letter-spacing: 0.15em; text-transform: uppercase; }
+  .toolbar {
+    flex-shrink: 0;
+    height: 46px;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
 
-  .share-btn {
-    background: none;
+  .tb-btn {
+    background: var(--surface);
     border: 1px solid var(--border);
     color: var(--accent2);
-    padding: 0.5rem 1.1rem;
+    padding: 0 0.85rem;
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.82rem;
     font-family: 'DM Sans', sans-serif;
-    letter-spacing: 0.08em;
-    transition: all 0.2s;
-  }
-  .share-btn:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
-
-  #toast {
-    position: fixed;
-    top: 1.5rem;
-    left: 50%;
-    transform: translateX(-50%) translateY(-80px);
-    background: var(--accent);
-    color: var(--bg);
-    padding: 0.6rem 1.4rem;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: transform 0.3s ease;
-    z-index: 999;
     white-space: nowrap;
-  }
-  #toast.show { transform: translateX(-50%) translateY(0); }
-
-  .viewer-area {
-    flex: 1;
-    width: 100%;
-    max-width: 1100px;
-    padding: 2rem 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-  }
-
-  #loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    padding: 4rem;
-    color: var(--muted);
-  }
-  .spinner {
-    width: 36px; height: 36px;
-    border: 2px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* Flipbook container */
-  #flipbook-wrap {
-    display: none;
-    position: relative;
-    perspective: 2500px;
-    width: 100%;
-    max-width: 900px;
-  }
-
-  #flipbook {
-    width: 100%;
-    position: relative;
-    display: flex;
-    justify-content: center;
-  }
-
-  .page-container {
-    position: relative;
-    display: flex;
-    gap: 4px;
-    align-items: flex-start;
-  }
-
-  .page-side {
-    position: relative;
-    background: white;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
-    overflow: hidden;
-    transition: box-shadow 0.3s;
-  }
-
-  .page-side canvas { display: block; }
-
-  /* Spine shadow */
-  .spine {
-    width: 8px;
-    background: linear-gradient(to right, rgba(0,0,0,0.3), rgba(0,0,0,0.05));
-    flex-shrink: 0;
-    align-self: stretch;
-  }
-
-  /* Controls */
-  .controls {
+    transition: all 0.15s;
+    height: 30px;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-    justify-content: center;
   }
+  .tb-btn:hover:not(:disabled) { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .tb-btn:disabled { opacity: 0.3; cursor: default; }
 
-  .ctrl-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--accent2);
-    padding: 0.6rem 1.4rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-family: 'DM Sans', sans-serif;
-    transition: all 0.18s;
-    letter-spacing: 0.04em;
-  }
-  .ctrl-btn:hover:not(:disabled) { background: var(--accent); color: var(--bg); border-color: var(--accent); }
-  .ctrl-btn:disabled { opacity: 0.3; cursor: default; }
+  .tb-sep { width: 1px; height: 22px; background: var(--border); flex-shrink: 0; }
 
   #page-display {
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     color: var(--muted);
-    min-width: 110px;
+    min-width: 105px;
     text-align: center;
-    letter-spacing: 0.05em;
+    white-space: nowrap;
   }
 
   .zoom-group {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
     border: 1px solid var(--border);
     border-radius: 4px;
     overflow: hidden;
+    flex-shrink: 0;
   }
   .zoom-group button {
     background: var(--surface);
     border: none;
     color: var(--accent2);
-    width: 34px; height: 34px;
+    width: 28px; height: 30px;
     cursor: pointer;
-    font-size: 1.1rem;
+    font-size: 1rem;
     transition: background 0.15s;
   }
   .zoom-group button:hover { background: var(--surface2); }
-  .zoom-group span {
-    font-size: 0.78rem;
-    color: var(--muted);
-    min-width: 42px;
-    text-align: center;
-  }
+  .zoom-group span { font-size: 0.75rem; color: var(--muted); min-width: 42px; text-align: center; }
 
-  /* Page jump */
   .jump-group {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.82rem;
+    gap: 0.3rem;
+    font-size: 0.78rem;
     color: var(--muted);
+    white-space: nowrap;
   }
   .jump-group input {
-    width: 52px;
+    width: 46px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 4px;
     color: var(--text);
-    padding: 0.35rem 0.5rem;
-    font-size: 0.85rem;
+    padding: 0.2rem 0.3rem;
+    font-size: 0.8rem;
     text-align: center;
     font-family: 'DM Sans', sans-serif;
+    height: 28px;
   }
   .jump-group input:focus { outline: none; border-color: var(--accent); }
   .jump-group button {
@@ -230,255 +142,323 @@
     border: 1px solid var(--border);
     border-radius: 4px;
     color: var(--accent);
-    padding: 0.35rem 0.7rem;
+    padding: 0 0.6rem;
+    height: 28px;
     cursor: pointer;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     transition: all 0.15s;
   }
   .jump-group button:hover { background: var(--accent); color: var(--bg); }
 
-  /* Flip animation */
-  .flipping-left { animation: flipLeft 0.45s ease-in-out forwards; }
-  .flipping-right { animation: flipRight 0.45s ease-in-out forwards; }
-
-  @keyframes flipLeft {
-    0% { transform: rotateY(0deg); }
-    50% { transform: rotateY(-90deg); box-shadow: -20px 0 40px rgba(0,0,0,0.4); }
-    100% { transform: rotateY(0deg); }
-  }
-  @keyframes flipRight {
-    0% { transform: rotateY(0deg); }
-    50% { transform: rotateY(90deg); box-shadow: 20px 0 40px rgba(0,0,0,0.4); }
-    100% { transform: rotateY(0deg); }
+  /* ── VIEWER ── */
+  #viewer {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 1.2rem;
+    min-height: 0;
   }
 
-  footer {
-    padding: 1rem;
-    font-size: 0.75rem;
+  #page-container {
+    display: flex;
+    gap: 0;
+    align-items: flex-start;
+    flex-shrink: 0;
+  }
+
+  .page-side {
+    background: white;
+    box-shadow: 0 6px 32px rgba(0,0,0,0.65);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .page-side canvas { display: block; }
+
+  .spine {
+    width: 6px;
+    background: linear-gradient(to right, rgba(0,0,0,0.28), rgba(0,0,0,0.03));
+    flex-shrink: 0;
+    align-self: stretch;
+  }
+
+  /* ── STATES ── */
+  #loading, #no-file {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9rem;
     color: var(--muted);
-    text-align: center;
-    border-top: 1px solid var(--border);
+    padding: 4rem 2rem;
     width: 100%;
+    text-align: center;
+  }
+  #no-file { display: none; }
+  #no-file h2 { font-size: 1.05rem; color: var(--accent2); font-weight: 400; }
+  #no-file code {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-family: monospace;
   }
 
-  @media (max-width: 600px) {
-    .page-container { flex-direction: column; }
+  .spinner {
+    width: 34px; height: 34px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed;
+    top: 1.2rem; left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: var(--accent);
+    color: var(--bg);
+    padding: 0.45rem 1.2rem;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: transform 0.3s ease;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── FLIP ── */
+  .flipping-l { animation: flipL 0.32s ease-in-out; }
+  .flipping-r { animation: flipR 0.32s ease-in-out; }
+  @keyframes flipL { 0%{transform:rotateY(0)} 40%{transform:rotateY(-82deg)} 100%{transform:rotateY(0)} }
+  @keyframes flipR { 0%{transform:rotateY(0)} 40%{transform:rotateY(82deg)}  100%{transform:rotateY(0)} }
+
+  @media (max-width: 540px) {
     .spine { display: none; }
+    #page-container { flex-direction: column; }
+    .logo span { display: none; }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">
-    Kospan
-    <span>Katalog obkladů 2026</span>
-  </div>
-  <button class="share-btn" onclick="sharePage()">⤴ Sdílet stranu</button>
+  <div class="logo">Katalogy<span id="katalog-name"></span></div>
 </header>
+
+<div class="toolbar">
+  <button class="tb-btn" id="btn-prev" disabled onclick="prevSpread()">← Zpět</button>
+  <button class="tb-btn" id="btn-next" disabled onclick="nextSpread()">Dál →</button>
+  <div class="tb-sep"></div>
+  <span id="page-display">— / —</span>
+  <div class="tb-sep"></div>
+  <div class="zoom-group">
+    <button onclick="changeZoom(-0.15)">−</button>
+    <span id="zoom-label">100%</span>
+    <button onclick="changeZoom(0.15)">+</button>
+  </div>
+  <button class="tb-btn" onclick="fitToWindow()">⊡ Fit</button>
+  <div class="tb-sep"></div>
+  <div class="jump-group">
+    <span>Str.</span>
+    <input type="number" id="jump-input" min="1" placeholder="č.">
+    <button onclick="jumpToPage()">Jdi</button>
+  </div>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" onclick="sharePage()">⤴ Sdílet</button>
+</div>
 
 <div id="toast">Odkaz zkopírován!</div>
 
-<div class="viewer-area">
-  <div id="loading">
-    <div class="spinner"></div>
-    <div>Načítám katalog…</div>
+<div id="viewer">
+  <div id="loading"><div class="spinner"></div><div>Načítám PDF…</div></div>
+  <div id="no-file">
+    <h2>Žádný katalog nebyl zadán</h2>
+    <p>Použij URL ve formátu:</p>
+    <code>?file=nazev-katalogu</code>
+    <p style="margin-top:0.4rem;font-size:0.82rem">PDF musí být ve složce <code>katalog/</code> v repozitáři</p>
+    <p style="margin-top:0.6rem">Přímý odkaz na konkrétní stranu:</p>
+    <code>?file=nazev-katalogu&amp;page=15</code>
   </div>
-
-  <div id="flipbook-wrap">
-    <div id="flipbook">
-      <div class="page-container" id="page-container">
-        <div class="page-side" id="left-page">
-          <canvas id="canvas-left"></canvas>
-        </div>
-        <div class="spine"></div>
-        <div class="page-side" id="right-page">
-          <canvas id="canvas-right"></canvas>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="controls">
-    <button class="ctrl-btn" id="btn-prev" disabled onclick="prevSpread()">← Zpět</button>
-
-    <div class="zoom-group">
-      <button onclick="changeZoom(-0.2)">−</button>
-      <span id="zoom-label">100%</span>
-      <button onclick="changeZoom(0.2)">+</button>
-    </div>
-
-    <span id="page-display">— / —</span>
-
-    <div class="jump-group">
-      <span>Jdi na str.</span>
-      <input type="number" id="jump-input" min="1" placeholder="č.">
-      <button onclick="jumpToPage()">Jdi</button>
-    </div>
-
-    <button class="ctrl-btn" id="btn-next" disabled onclick="nextSpread()">Dál →</button>
+  <div id="page-container" style="display:none">
+    <div class="page-side" id="left-page"><canvas id="canvas-left"></canvas></div>
+    <div class="spine"></div>
+    <div class="page-side" id="right-page"><canvas id="canvas-right"></canvas></div>
   </div>
 </div>
 
-<footer>Kospan s.r.o. · Katalog obkladů a lamel 2026</footer>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-const PDF_SRC = 'Katalog_obklady_Kospan_2026_01_CZ_lamely.pdf';
+const params    = new URLSearchParams(window.location.search);
+const fileName  = params.get('file');
+const startPage = parseInt(params.get('page')) || 1;
 
-let pdfDoc = null;
-let currentSpread = 0; // 0 = cover only (page 1), then pairs
-let scale = 1.2;
-let totalPages = 0;
-let rendering = false;
+let pdfDoc = null, currentSpread = 0, scale = 1, totalPages = 0;
+let rendering = false, nativePdfW = 0, nativePdfH = 0;
 
-const canvasL = document.getElementById('canvas-left');
-const canvasR = document.getElementById('canvas-right');
-const ctxL = canvasL.getContext('2d');
-const ctxR = canvasR.getContext('2d');
-const leftPage = document.getElementById('left-page');
+const canvasL   = document.getElementById('canvas-left');
+const canvasR   = document.getElementById('canvas-right');
+const ctxL      = canvasL.getContext('2d');
+const ctxR      = canvasR.getContext('2d');
+const leftPage  = document.getElementById('left-page');
 const rightPage = document.getElementById('right-page');
-const loading = document.getElementById('loading');
-const flipbookWrap = document.getElementById('flipbook-wrap');
-const btnPrev = document.getElementById('btn-prev');
-const btnNext = document.getElementById('btn-next');
-const pageDisplay = document.getElementById('page-display');
+const container = document.getElementById('page-container');
+const loading   = document.getElementById('loading');
+const noFile    = document.getElementById('no-file');
+const btnPrev   = document.getElementById('btn-prev');
+const btnNext   = document.getElementById('btn-next');
+const pageDisp  = document.getElementById('page-display');
 const jumpInput = document.getElementById('jump-input');
+const zoomLabel = document.getElementById('zoom-label');
+const viewer    = document.getElementById('viewer');
 
-// URL param: ?page=N
-const urlParams = new URLSearchParams(window.location.search);
-const startPage = parseInt(urlParams.get('page')) || 1;
+if (!fileName) {
+  loading.style.display = 'none';
+  noFile.style.display  = 'flex';
+} else {
+  document.getElementById('katalog-name').textContent = ' · ' + decodeURIComponent(fileName);
+  document.title = decodeURIComponent(fileName);
 
-fetch(PDF_SRC)
-  .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.arrayBuffer(); })
-  .then(buf => pdfjsLib.getDocument({ data: buf }).promise)
-  .then(pdf => {
-    pdfDoc = pdf;
-    totalPages = pdf.numPages;
-    jumpInput.max = totalPages;
-    loading.style.display = 'none';
-    flipbookWrap.style.display = 'block';
-    goToPage(startPage);
-  }).catch(err => {
-    loading.innerHTML = '<div style="color:#c0553a">Chyba při načítání PDF: ' + err.message + '</div>';
-  });
+  fetch('katalog/' + fileName + '.pdf')
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status + ' – soubor katalog/' + fileName + '.pdf nenalezen'); return r.arrayBuffer(); })
+    .then(buf => pdfjsLib.getDocument({ data: buf }).promise)
+    .then(async pdf => {
+      pdfDoc = pdf;
+      totalPages = pdf.numPages;
+      jumpInput.max = totalPages;
 
+      const p1 = await pdf.getPage(1);
+      const vp = p1.getViewport({ scale: 1 });
+      nativePdfW = vp.width;
+      nativePdfH = vp.height;
+
+      loading.style.display   = 'none';
+      container.style.display = 'flex';
+
+      fitToWindow();
+      goToPage(startPage);
+    })
+    .catch(err => {
+      loading.innerHTML = `<div style="color:#c0553a;max-width:420px">
+        <b>Chyba při načítání:</b><br>${err.message}
+        <br><br><small>Zkontroluj, že PDF je uloženo ve složce <b>katalog/</b> v repozitáři.</small>
+      </div>`;
+    });
+}
+
+/* ── Auto-fit ── */
+function calcFitScale(spreadCount) {
+  if (!nativePdfW) return 1;
+  const vw = viewer.clientWidth  - 28;
+  const vh = viewer.clientHeight - 28;
+  const totalW = nativePdfW * spreadCount + (spreadCount > 1 ? 6 : 0);
+  let s = vw / totalW;
+  if (nativePdfH * s > vh) s = vh / nativePdfH;
+  return Math.max(0.2, s);
+}
+
+function fitToWindow() {
+  const n = currentSpread === 0 ? 1 : 2;
+  scale = calcFitScale(n);
+  updateZoomLabel();
+  if (pdfDoc) renderSpread(currentSpread, null);
+}
+
+function updateZoomLabel() {
+  const fit = calcFitScale(currentSpread === 0 ? 1 : 2);
+  zoomLabel.textContent = Math.round(scale / fit * 100) + '%';
+}
+
+/* ── Spread logic ── */
 function spreadForPage(page) {
   if (page <= 1) return 0;
   return Math.ceil((page - 1) / 2);
 }
-
 function pagesForSpread(spread) {
   if (spread === 0) return [1, null];
-  const left = spread * 2;
-  const right = spread * 2 + 1;
-  return [
-    left <= totalPages ? left : null,
-    right <= totalPages ? right : null
-  ];
+  const l = spread * 2, r = spread * 2 + 1;
+  return [l <= totalPages ? l : null, r <= totalPages ? r : null];
 }
 
+/* ── Render ── */
 async function renderSpread(spread, direction) {
   if (rendering) return;
   rendering = true;
-
   const [lNum, rNum] = pagesForSpread(spread);
 
-  async function renderToCanvas(pageNum, canvas, ctx) {
-    if (!pageNum) {
-      canvas.width = 0;
-      canvas.height = 0;
-      canvas.parentElement.style.display = 'none';
-      return;
-    }
-    canvas.parentElement.style.display = 'block';
-    const page = await pdfDoc.getPage(pageNum);
-    const vp = page.getViewport({ scale });
-    canvas.width = vp.width;
+  async function draw(num, canvas, ctx, side) {
+    if (!num) { side.style.display = 'none'; return; }
+    side.style.display = 'block';
+    const page = await pdfDoc.getPage(num);
+    const vp   = page.getViewport({ scale });
+    canvas.width  = vp.width;
     canvas.height = vp.height;
     await page.render({ canvasContext: ctx, viewport: vp }).promise;
   }
 
-  // Flip animation
   if (direction) {
-    const animEl = direction === 'next' ? rightPage : leftPage;
-    animEl.classList.add(direction === 'next' ? 'flipping-right' : 'flipping-left');
-    await new Promise(r => setTimeout(r, 220));
-    animEl.classList.remove('flipping-right', 'flipping-left');
+    const el  = direction === 'next' ? rightPage : leftPage;
+    const cls = direction === 'next' ? 'flipping-r' : 'flipping-l';
+    el.classList.add(cls);
+    await new Promise(r => setTimeout(r, 160));
+    el.classList.remove(cls);
   }
 
-  await Promise.all([
-    renderToCanvas(lNum, canvasL, ctxL),
-    renderToCanvas(rNum, canvasR, ctxR)
-  ]);
-
+  await Promise.all([draw(lNum, canvasL, ctxL, leftPage), draw(rNum, canvasR, ctxR, rightPage)]);
   currentSpread = spread;
 
-  // Update URL
-  const firstPage = lNum || rNum;
+  /* sync URL */
+  const shownPage = lNum || rNum;
   const url = new URL(window.location);
-  url.searchParams.set('page', firstPage);
+  url.searchParams.set('file', fileName);
+  url.searchParams.set('page', shownPage);
   window.history.replaceState({}, '', url);
 
-  // UI update
-  const displayLeft = lNum || '—';
-  const displayRight = rNum || '';
-  pageDisplay.textContent = rNum
-    ? `str. ${displayLeft}–${displayRight} / ${totalPages}`
-    : `str. ${displayLeft} / ${totalPages}`;
-
+  pageDisp.textContent = rNum
+    ? `str. ${lNum}–${rNum} / ${totalPages}`
+    : `str. ${lNum} / ${totalPages}`;
   btnPrev.disabled = currentSpread === 0;
-  btnNext.disabled = (rNum === null || rNum >= totalPages) && (lNum >= totalPages);
-
+  btnNext.disabled = !rNum || rNum >= totalPages;
+  updateZoomLabel();
   rendering = false;
 }
 
-function goToPage(page) {
-  const spread = spreadForPage(page);
-  renderSpread(spread, null);
-}
+function goToPage(page) { renderSpread(spreadForPage(page), null); }
+function nextSpread() { const n = currentSpread + 1; const [l] = pagesForSpread(n); if (l && l <= totalPages) renderSpread(n, 'next'); }
+function prevSpread() { if (currentSpread > 0) renderSpread(currentSpread - 1, 'prev'); }
+function jumpToPage() { const n = parseInt(jumpInput.value); if (n >= 1 && n <= totalPages) goToPage(n); jumpInput.value = ''; }
 
-function nextSpread() {
-  const next = currentSpread + 1;
-  const [l] = pagesForSpread(next);
-  if (l && l <= totalPages) renderSpread(next, 'next');
-}
-
-function prevSpread() {
-  if (currentSpread > 0) renderSpread(currentSpread - 1, 'prev');
-}
-
-function jumpToPage() {
-  const n = parseInt(jumpInput.value);
-  if (n >= 1 && n <= totalPages) goToPage(n);
-  jumpInput.value = '';
-}
-
-function changeZoom(delta) {
-  scale = Math.min(Math.max(scale + delta, 0.5), 3);
-  document.getElementById('zoom-label').textContent = Math.round(scale / 1.2 * 100) + '%';
-  renderSpread(currentSpread, null);
+function changeZoom(d) {
+  scale = Math.min(Math.max(scale + d, 0.2), 5);
+  updateZoomLabel();
+  if (pdfDoc) renderSpread(currentSpread, null);
 }
 
 function sharePage() {
-  const url = new URL(window.location);
-  navigator.clipboard.writeText(url.toString()).then(() => {
+  navigator.clipboard.writeText(window.location.href).then(() => {
     const t = document.getElementById('toast');
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 2500);
   });
 }
 
-// Keyboard navigation
 document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSpread();
-  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevSpread();
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prevSpread();
 });
-
-// Jump on Enter
 jumpInput.addEventListener('keydown', e => { if (e.key === 'Enter') jumpToPage(); });
+
+let rTimer;
+window.addEventListener('resize', () => { clearTimeout(rTimer); rTimer = setTimeout(fitToWindow, 180); });
 </script>
 </body>
 </html>
