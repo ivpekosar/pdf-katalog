@@ -1,10 +1,12 @@
 # Flipbook Viewer
 
-Amazing flip book component with animated pages.
+Co URL
+Otevřít katalog    ?file=Katalog_obklady_Kospan_2026_01_CZ_lamely
+Konkrétní strana   ?file=Katalog_obklady_Kospan_2026_01_CZ_lamely&page=15
+Další katalog      ?file=jiny-katalog
 
-![demo](./test/demo.gif)
+https://ivpekosar.github.io/pdf-katalog/?file=Katalog_obklady_Kospan_2026_01_CZ_lamely
 
-This is a tiny library that can show flip books from any source (including PDF’s, images, etc).
 
 ## Advantages
 
