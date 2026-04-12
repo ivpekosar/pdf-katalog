@@ -294,6 +294,7 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -344,14 +345,16 @@ if (!fileName) {
       loading.style.display   = 'none';
       container.style.display = 'flex';
 
-      fitToWindow();
-      goToPage(startPage);
+      /* vypočti scale bez spuštění renderu */
+      const spreadCount = startPage <= 1 ? 1 : 2;
+      scale = calcFitScale(spreadCount);
+      updateZoomLabel();
+
+      /* jediný render při startu */
+      await renderSpread(spreadForPage(startPage), null);
     })
     .catch(err => {
-      loading.innerHTML = `<div style="color:#c0553a;max-width:420px">
-        <b>Chyba při načítání:</b><br>${err.message}
-        <br><br><small>Zkontroluj, že PDF je uloženo ve složce <b>katalog/</b> v repozitáři.</small>
-      </div>`;
+      loading.innerHTML = '<div style="color:#c0553a;max-width:420px"><b>Chyba při načítání:</b><br>' + err.message + '<br><br><small>Zkontroluj, že PDF je uloženo ve složce <b>katalog/</b> v repozitáři.</small></div>';
     });
 }
 
@@ -367,10 +370,11 @@ function calcFitScale(spreadCount) {
 }
 
 function fitToWindow() {
+  if (!pdfDoc || rendering) return;
   const n = currentSpread === 0 ? 1 : 2;
   scale = calcFitScale(n);
   updateZoomLabel();
-  if (pdfDoc) renderSpread(currentSpread, null);
+  renderSpread(currentSpread, null);
 }
 
 function updateZoomLabel() {
@@ -393,6 +397,7 @@ function pagesForSpread(spread) {
 async function renderSpread(spread, direction) {
   if (rendering) return;
   rendering = true;
+
   const [lNum, rNum] = pagesForSpread(spread);
 
   async function draw(num, canvas, ctx, side) {
@@ -416,16 +421,17 @@ async function renderSpread(spread, direction) {
   await Promise.all([draw(lNum, canvasL, ctxL, leftPage), draw(rNum, canvasR, ctxR, rightPage)]);
   currentSpread = spread;
 
-  /* sync URL */
-  const shownPage = lNum || rNum;
-  const url = new URL(window.location);
-  url.searchParams.set('file', fileName);
-  url.searchParams.set('page', shownPage);
-  window.history.replaceState({}, '', url);
+  if (fileName) {
+    const url = new URL(window.location);
+    url.searchParams.set('file', fileName);
+    url.searchParams.set('page', lNum || rNum);
+    window.history.replaceState({}, '', url);
+  }
 
   pageDisp.textContent = rNum
-    ? `str. ${lNum}–${rNum} / ${totalPages}`
-    : `str. ${lNum} / ${totalPages}`;
+    ? 'str. ' + lNum + '–' + rNum + ' / ' + totalPages
+    : 'str. ' + lNum + ' / ' + totalPages;
+
   btnPrev.disabled = currentSpread === 0;
   btnNext.disabled = !rNum || rNum >= totalPages;
   updateZoomLabel();
@@ -433,11 +439,27 @@ async function renderSpread(spread, direction) {
 }
 
 function goToPage(page) { renderSpread(spreadForPage(page), null); }
-function nextSpread() { const n = currentSpread + 1; const [l] = pagesForSpread(n); if (l && l <= totalPages) renderSpread(n, 'next'); }
-function prevSpread() { if (currentSpread > 0) renderSpread(currentSpread - 1, 'prev'); }
-function jumpToPage() { const n = parseInt(jumpInput.value); if (n >= 1 && n <= totalPages) goToPage(n); jumpInput.value = ''; }
+
+function nextSpread() {
+  if (rendering) return;
+  const n = currentSpread + 1;
+  const [l] = pagesForSpread(n);
+  if (l && l <= totalPages) renderSpread(n, 'next');
+}
+
+function prevSpread() {
+  if (rendering) return;
+  if (currentSpread > 0) renderSpread(currentSpread - 1, 'prev');
+}
+
+function jumpToPage() {
+  const n = parseInt(jumpInput.value);
+  if (n >= 1 && n <= totalPages) goToPage(n);
+  jumpInput.value = '';
+}
 
 function changeZoom(d) {
+  if (rendering) return;
   scale = Math.min(Math.max(scale + d, 0.2), 5);
   updateZoomLabel();
   if (pdfDoc) renderSpread(currentSpread, null);
@@ -457,8 +479,18 @@ document.addEventListener('keydown', e => {
 });
 jumpInput.addEventListener('keydown', e => { if (e.key === 'Enter') jumpToPage(); });
 
+/* klik na levou/pravou polovinu stránky pro listování */
+viewer.addEventListener('click', e => {
+  if (!pdfDoc || rendering) return;
+  const mid = viewer.clientWidth / 2;
+  if (e.clientX > mid) nextSpread(); else prevSpread();
+});
+
 let rTimer;
-window.addEventListener('resize', () => { clearTimeout(rTimer); rTimer = setTimeout(fitToWindow, 180); });
+window.addEventListener('resize', () => {
+  clearTimeout(rTimer);
+  rTimer = setTimeout(fitToWindow, 200);
+});
 </script>
 </body>
 </html>
