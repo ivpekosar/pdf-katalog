@@ -3,267 +3,140 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Katalogy</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Katalogy IVPEKO</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #1a1814;
-    --surface: #242220;
-    --surface2: #2e2c29;
-    --accent: #c8a96e;
-    --accent2: #e8d5b0;
-    --text: #f0ebe2;
-    --muted: #8a8278;
-    --border: rgba(200,169,110,0.2);
+    --bg: #1a1814; --surface: #242220; --surface2: #2e2c29;
+    --accent: #c8a96e; --accent2: #e8d5b0; --text: #f0ebe2;
+    --muted: #8a8278; --border: rgba(200,169,110,0.2);
   }
+  html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; }
+  body { display: flex; flex-direction: column; }
 
-  html, body { height: 100%; overflow: hidden; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    display: flex;
-    flex-direction: column;
-  }
-
-  header {
+  /* ── TOPBAR ── */
+  #topbar {
     flex-shrink: 0;
-    height: 52px;
-    padding: 0 1.5rem;
+    height: 48px;
+    padding: 0 0.75rem;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
+    gap: 0.6rem;
     background: var(--surface);
-  }
-
-  .logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    color: var(--accent);
-    white-space: nowrap;
-  }
-  .logo span {
-    color: var(--muted);
-    font-size: 0.72rem;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 300;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-left: 0.6rem;
-  }
-
-  .toolbar {
-    flex-shrink: 0;
-    height: 46px;
-    padding: 0 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--surface2);
     border-bottom: 1px solid var(--border);
     overflow-x: auto;
+    overflow-y: hidden;
   }
-
-  .tb-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--accent2);
-    padding: 0 0.85rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.82rem;
-    font-family: 'DM Sans', sans-serif;
+  .logo {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--accent);
     white-space: nowrap;
-    transition: all 0.15s;
-    height: 30px;
-    display: flex;
-    align-items: center;
-  }
-  .tb-btn:hover:not(:disabled) { background: var(--accent); color: var(--bg); border-color: var(--accent); }
-  .tb-btn:disabled { opacity: 0.3; cursor: default; }
-
-  .tb-sep { width: 1px; height: 22px; background: var(--border); flex-shrink: 0; }
-
-  #page-display {
-    font-size: 0.78rem;
-    color: var(--muted);
-    min-width: 105px;
-    text-align: center;
-    white-space: nowrap;
-  }
-
-  .zoom-group {
-    display: flex;
-    align-items: center;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    overflow: hidden;
+    letter-spacing: 0.04em;
+    margin-right: 0.4rem;
     flex-shrink: 0;
   }
-  .zoom-group button {
-    background: var(--surface);
-    border: none;
-    color: var(--accent2);
-    width: 28px; height: 30px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background 0.15s;
-  }
-  .zoom-group button:hover { background: var(--surface2); }
-  .zoom-group span { font-size: 0.75rem; color: var(--muted); min-width: 42px; text-align: center; }
+  .logo em { color: var(--muted); font-style: normal; font-weight: 300; }
+  .tb-sep { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; }
 
-  .jump-group {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-size: 0.78rem;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-  .jump-group input {
-    width: 46px;
-    background: var(--surface);
+  .tb-btn {
+    background: var(--surface2);
     border: 1px solid var(--border);
+    color: var(--accent2);
+    padding: 0 0.75rem;
     border-radius: 4px;
-    color: var(--text);
-    padding: 0.2rem 0.3rem;
-    font-size: 0.8rem;
-    text-align: center;
-    font-family: 'DM Sans', sans-serif;
-    height: 28px;
-  }
-  .jump-group input:focus { outline: none; border-color: var(--accent); }
-  .jump-group button {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--accent);
-    padding: 0 0.6rem;
-    height: 28px;
     cursor: pointer;
-    font-size: 0.78rem;
-    transition: all 0.15s;
+    font-size: 0.8rem;
+    font-family: inherit;
+    white-space: nowrap;
+    transition: all 0.13s;
+    height: 28px;
+    display: flex; align-items: center; gap: 4px;
+    flex-shrink: 0;
   }
+  .tb-btn:hover:not(:disabled) { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .tb-btn:disabled { opacity: 0.28; cursor: default; }
+
+  #page-display { font-size: 0.76rem; color: var(--muted); min-width: 95px; text-align: center; white-space: nowrap; flex-shrink: 0; }
+
+  .zoom-group { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; flex-shrink: 0; }
+  .zoom-group button { background: var(--surface2); border: none; color: var(--accent2); width: 26px; height: 28px; cursor: pointer; font-size: 1rem; transition: background 0.13s; }
+  .zoom-group button:hover { background: var(--surface); }
+  .zoom-group span { font-size: 0.73rem; color: var(--muted); min-width: 38px; text-align: center; }
+
+  .jump-group { display: flex; align-items: center; gap: 0.25rem; font-size: 0.76rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+  .jump-group input { width: 42px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; color: var(--text); padding: 0 0.3rem; font-size: 0.78rem; text-align: center; font-family: inherit; height: 26px; }
+  .jump-group input:focus { outline: none; border-color: var(--accent); }
+  .jump-group button { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; color: var(--accent); padding: 0 0.5rem; height: 26px; cursor: pointer; font-size: 0.76rem; transition: all 0.13s; }
   .jump-group button:hover { background: var(--accent); color: var(--bg); }
 
   /* ── VIEWER ── */
-  #viewer {
-    flex: 1;
-    overflow: auto;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 1.2rem;
-    min-height: 0;
-  }
-
-  #page-container {
-    display: flex;
-    gap: 0;
-    align-items: flex-start;
-    flex-shrink: 0;
-  }
-
-  .page-side {
-    background: white;
-    box-shadow: 0 6px 32px rgba(0,0,0,0.65);
-    overflow: hidden;
-    flex-shrink: 0;
-  }
+  #viewer { flex: 1; overflow: auto; display: flex; align-items: flex-start; justify-content: center; padding: 1rem; min-height: 0; }
+  #page-container { display: flex; gap: 0; align-items: flex-start; flex-shrink: 0; }
+  .page-side { background: white; box-shadow: 0 4px 28px rgba(0,0,0,0.6); overflow: hidden; flex-shrink: 0; }
   .page-side canvas { display: block; }
-
-  .spine {
-    width: 6px;
-    background: linear-gradient(to right, rgba(0,0,0,0.28), rgba(0,0,0,0.03));
-    flex-shrink: 0;
-    align-self: stretch;
-  }
+  .spine { width: 5px; background: linear-gradient(to right, rgba(0,0,0,0.25), rgba(0,0,0,0.02)); flex-shrink: 0; align-self: stretch; }
 
   /* ── STATES ── */
-  #loading, #no-file {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.9rem;
-    color: var(--muted);
-    padding: 4rem 2rem;
-    width: 100%;
-    text-align: center;
-  }
+  #loading, #no-file { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.85rem; color: var(--muted); padding: 4rem 2rem; width: 100%; text-align: center; }
   #no-file { display: none; }
-  #no-file h2 { font-size: 1.05rem; color: var(--accent2); font-weight: 400; }
-  #no-file code {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 0.25rem 0.65rem;
-    font-size: 0.85rem;
-    color: var(--accent);
-    font-family: monospace;
-  }
-
-  .spinner {
-    width: 34px; height: 34px;
-    border: 2px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
+  #no-file h2 { font-size: 1rem; color: var(--accent2); font-weight: 400; }
+  #no-file code { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 0.2rem 0.6rem; font-size: 0.82rem; color: var(--accent); font-family: monospace; }
+  .spinner { width: 30px; height: 30px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.75s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ── TOAST ── */
-  #toast {
+  /* ── FULLSCREEN BUTTON (fixed corner) ── */
+  #fs-btn {
     position: fixed;
-    top: 1.2rem; left: 50%;
-    transform: translateX(-50%) translateY(-80px);
-    background: var(--accent);
-    color: var(--bg);
-    padding: 0.45rem 1.2rem;
-    border-radius: 4px;
-    font-size: 0.82rem;
-    font-weight: 500;
-    transition: transform 0.3s ease;
-    z-index: 999;
-    white-space: nowrap;
+    bottom: 1rem; right: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--accent2);
+    width: 38px; height: 38px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    z-index: 100;
+    opacity: 0.7;
   }
+  #fs-btn:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); opacity: 1; }
+
+  /* ── TOAST ── */
+  #toast { position: fixed; top: 1rem; left: 50%; transform: translateX(-50%) translateY(-70px); background: var(--accent); color: var(--bg); padding: 0.4rem 1.1rem; border-radius: 4px; font-size: 0.8rem; font-weight: 500; transition: transform 0.28s ease; z-index: 999; white-space: nowrap; }
   #toast.show { transform: translateX(-50%) translateY(0); }
 
-  /* ── FLIP ── */
-  .flipping-l { animation: flipL 0.32s ease-in-out; }
-  .flipping-r { animation: flipR 0.32s ease-in-out; }
-  @keyframes flipL { 0%{transform:rotateY(0)} 40%{transform:rotateY(-82deg)} 100%{transform:rotateY(0)} }
-  @keyframes flipR { 0%{transform:rotateY(0)} 40%{transform:rotateY(82deg)}  100%{transform:rotateY(0)} }
+  /* ── FLIP ANIMATION ── */
+  .flipping-l { animation: flipL 0.28s ease-in-out; }
+  .flipping-r { animation: flipR 0.28s ease-in-out; }
+  @keyframes flipL { 0%{transform:rotateY(0)} 45%{transform:rotateY(-80deg)} 100%{transform:rotateY(0)} }
+  @keyframes flipR { 0%{transform:rotateY(0)} 45%{transform:rotateY(80deg)}  100%{transform:rotateY(0)} }
 
-  @media (max-width: 540px) {
-    .spine { display: none; }
-    #page-container { flex-direction: column; }
-    .logo span { display: none; }
-  }
+  /* ── PROGRESS BAR ── */
+  #progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); width: 0%; transition: width 0.2s; z-index: 200; }
+
+  @media (max-width: 540px) { .spine { display: none; } #page-container { flex-direction: column; } }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">Katalogy<span id="katalog-name"></span></div>
-</header>
+<div id="progress"></div>
 
-<div class="toolbar">
-  <button class="tb-btn" id="btn-prev" disabled onclick="prevSpread()">← Zpět</button>
-  <button class="tb-btn" id="btn-next" disabled onclick="nextSpread()">Dál →</button>
+<div id="topbar">
+  <div class="logo">Katalogy <em>IVPEKO</em></div>
   <div class="tb-sep"></div>
-  <span id="page-display">— / —</span>
+  <button class="tb-btn" id="btn-prev" disabled onclick="prevSpread()">&#8592; Zpět</button>
+  <button class="tb-btn" id="btn-next" disabled onclick="nextSpread()">Dál &#8594;</button>
+  <div class="tb-sep"></div>
+  <span id="page-display">&#8212; / &#8212;</span>
   <div class="tb-sep"></div>
   <div class="zoom-group">
-    <button onclick="changeZoom(-0.15)">−</button>
+    <button onclick="changeZoom(-0.15)">&#8722;</button>
     <span id="zoom-label">100%</span>
     <button onclick="changeZoom(0.15)">+</button>
   </div>
-  <button class="tb-btn" onclick="fitToWindow()">⊡ Fit</button>
+  <button class="tb-btn" onclick="fitToWindow()">&#8861; Fit</button>
   <div class="tb-sep"></div>
   <div class="jump-group">
     <span>Str.</span>
@@ -271,20 +144,21 @@
     <button onclick="jumpToPage()">Jdi</button>
   </div>
   <div class="tb-sep"></div>
-  <button class="tb-btn" onclick="sharePage()">⤴ Sdílet</button>
+  <button class="tb-btn" onclick="sharePage()">&#10548; Sdílet</button>
 </div>
 
 <div id="toast">Odkaz zkopírován!</div>
+<button id="fs-btn" onclick="toggleFullscreen()" title="Celá obrazovka">&#x26F6;</button>
 
 <div id="viewer">
-  <div id="loading"><div class="spinner"></div><div>Načítám PDF…</div></div>
+  <div id="loading"><div class="spinner"></div><div>Načítám PDF&#8230;</div></div>
   <div id="no-file">
     <h2>Žádný katalog nebyl zadán</h2>
     <p>Použij URL ve formátu:</p>
     <code>?file=nazev-katalogu</code>
-    <p style="margin-top:0.4rem;font-size:0.82rem">PDF musí být ve složce <code>katalog/</code> v repozitáři</p>
-    <p style="margin-top:0.6rem">Přímý odkaz na konkrétní stranu:</p>
-    <code>?file=nazev-katalogu&amp;page=15</code>
+    <p style="margin-top:0.4rem;font-size:0.8rem">PDF musí být ve složce <code>katalog/</code></p>
+    <p style="margin-top:0.6rem">Přímý odkaz na stranu:</p>
+    <code>?file=nazev&amp;page=15</code>
   </div>
   <div id="page-container" style="display:none">
     <div class="page-side" id="left-page"><canvas id="canvas-left"></canvas></div>
@@ -293,18 +167,18 @@
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+/* ── PDF.js lazy load ── */
+function loadPdfJs(cb) {
+  const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+  s.onload = cb;
+  document.head.appendChild(s);
+}
 
 const params    = new URLSearchParams(window.location.search);
 const fileName  = params.get('file');
 const startPage = parseInt(params.get('page')) || 1;
-
-let pdfDoc = null, currentSpread = 0, scale = 1, totalPages = 0;
-let rendering = false, nativePdfW = 0, nativePdfH = 0;
 
 const canvasL   = document.getElementById('canvas-left');
 const canvasR   = document.getElementById('canvas-right');
@@ -321,49 +195,110 @@ const pageDisp  = document.getElementById('page-display');
 const jumpInput = document.getElementById('jump-input');
 const zoomLabel = document.getElementById('zoom-label');
 const viewer    = document.getElementById('viewer');
+const progress  = document.getElementById('progress');
+const fsBtn     = document.getElementById('fs-btn');
+
+let pdfDoc = null, currentSpread = 0, scale = 1, totalPages = 0;
+let rendering = false, nativePdfW = 0, nativePdfH = 0;
+let pageCache = {}; /* rendered page cache */
 
 if (!fileName) {
   loading.style.display = 'none';
   noFile.style.display  = 'flex';
 } else {
-  document.getElementById('katalog-name').textContent = ' · ' + decodeURIComponent(fileName);
-  document.title = decodeURIComponent(fileName);
-
-  fetch('katalog/' + fileName + '.pdf')
-    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status + ' – soubor katalog/' + fileName + '.pdf nenalezen'); return r.arrayBuffer(); })
-    .then(buf => pdfjsLib.getDocument({ data: buf }).promise)
-    .then(async pdf => {
-      pdfDoc = pdf;
-      totalPages = pdf.numPages;
-      jumpInput.max = totalPages;
-
-      const p1 = await pdf.getPage(1);
-      const vp = p1.getViewport({ scale: 1 });
-      nativePdfW = vp.width;
-      nativePdfH = vp.height;
-
-      loading.style.display   = 'none';
-      container.style.display = 'flex';
-
-      /* vypočti scale bez spuštění renderu */
-      const spreadCount = startPage <= 1 ? 1 : 2;
-      scale = calcFitScale(spreadCount);
-      updateZoomLabel();
-
-      /* jediný render při startu */
-      await renderSpread(spreadForPage(startPage), null);
-    })
-    .catch(err => {
-      loading.innerHTML = '<div style="color:#c0553a;max-width:420px"><b>Chyba při načítání:</b><br>' + err.message + '<br><br><small>Zkontroluj, že PDF je uloženo ve složce <b>katalog/</b> v repozitáři.</small></div>';
-    });
+  document.title = 'Katalogy IVPEKO';
+  loadPdfJs(initPdf);
 }
 
-/* ── Auto-fit ── */
+function setProgress(pct) { progress.style.width = pct + '%'; }
+
+async function initPdf() {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  setProgress(10);
+
+  let buf;
+  try {
+    const r = await fetch('katalog/' + fileName + '.pdf');
+    if (!r.ok) throw new Error('HTTP ' + r.status + ' – katalog/' + fileName + '.pdf nenalezen');
+    const total = parseInt(r.headers.get('content-length')) || 0;
+    const reader = r.body.getReader();
+    const chunks = [];
+    let loaded = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      loaded += value.length;
+      if (total) setProgress(10 + Math.round(loaded / total * 50));
+    }
+    buf = new Uint8Array(loaded);
+    let pos = 0;
+    for (const c of chunks) { buf.set(c, pos); pos += c.length; }
+  } catch(err) {
+    setProgress(0);
+    loading.innerHTML = '<div style="color:#c0553a;max-width:380px"><b>Chyba:</b><br>' + err.message + '</div>';
+    return;
+  }
+
+  setProgress(65);
+  const pdf = await pdfjsLib.getDocument({ data: buf, disableStream: false }).promise;
+  pdfDoc = pdf;
+  totalPages = pdf.numPages;
+  jumpInput.max = totalPages;
+
+  const p1 = await pdf.getPage(1);
+  const vp = p1.getViewport({ scale: 1 });
+  nativePdfW = vp.width;
+  nativePdfH = vp.height;
+
+  setProgress(80);
+  loading.style.display   = 'none';
+  container.style.display = 'flex';
+
+  scale = calcFitScale(startPage <= 1 ? 1 : 2);
+  updateZoomLabel();
+
+  await renderSpread(spreadForPage(startPage), null);
+  setProgress(100);
+  setTimeout(() => { progress.style.width = '0%'; }, 400);
+
+  /* prefetch next spread in background */
+  prefetchAround(currentSpread);
+}
+
+/* ── Page cache & prefetch ── */
+async function getRenderedPage(num) {
+  if (!num || num < 1 || num > totalPages) return null;
+  if (pageCache[num + '_' + scale]) return pageCache[num + '_' + scale];
+  const page = await pdfDoc.getPage(num);
+  const vp   = page.getViewport({ scale });
+  const offscreen = document.createElement('canvas');
+  offscreen.width  = vp.width;
+  offscreen.height = vp.height;
+  await page.render({ canvasContext: offscreen.getContext('2d'), viewport: vp }).promise;
+  pageCache[num + '_' + scale] = offscreen;
+  return offscreen;
+}
+
+function prefetchAround(spread) {
+  /* prefetch next 2 spreads silently */
+  [[spread+1],[spread+2]].forEach(([s]) => {
+    const [l,r] = pagesForSpread(s);
+    if (l) getRenderedPage(l).catch(()=>{});
+    if (r) getRenderedPage(r).catch(()=>{});
+  });
+}
+
+function clearCache() { pageCache = {}; }
+
+/* ── Fit ── */
 function calcFitScale(spreadCount) {
   if (!nativePdfW) return 1;
-  const vw = viewer.clientWidth  - 28;
-  const vh = viewer.clientHeight - 28;
-  const totalW = nativePdfW * spreadCount + (spreadCount > 1 ? 6 : 0);
+  const vw = viewer.clientWidth  - 24;
+  const vh = viewer.clientHeight - 24;
+  const totalW = nativePdfW * spreadCount + (spreadCount > 1 ? 5 : 0);
   let s = vw / totalW;
   if (nativePdfH * s > vh) s = vh / nativePdfH;
   return Math.max(0.2, s);
@@ -371,6 +306,7 @@ function calcFitScale(spreadCount) {
 
 function fitToWindow() {
   if (!pdfDoc || rendering) return;
+  clearCache();
   const n = currentSpread === 0 ? 1 : 2;
   scale = calcFitScale(n);
   updateZoomLabel();
@@ -383,10 +319,7 @@ function updateZoomLabel() {
 }
 
 /* ── Spread logic ── */
-function spreadForPage(page) {
-  if (page <= 1) return 0;
-  return Math.ceil((page - 1) / 2);
-}
+function spreadForPage(page) { return page <= 1 ? 0 : Math.ceil((page - 1) / 2); }
 function pagesForSpread(spread) {
   if (spread === 0) return [1, null];
   const l = spread * 2, r = spread * 2 + 1;
@@ -400,25 +333,28 @@ async function renderSpread(spread, direction) {
 
   const [lNum, rNum] = pagesForSpread(spread);
 
-  async function draw(num, canvas, ctx, side) {
+  async function drawToCanvas(num, canvas, side) {
     if (!num) { side.style.display = 'none'; return; }
     side.style.display = 'block';
-    const page = await pdfDoc.getPage(num);
-    const vp   = page.getViewport({ scale });
-    canvas.width  = vp.width;
-    canvas.height = vp.height;
-    await page.render({ canvasContext: ctx, viewport: vp }).promise;
+    const src = await getRenderedPage(num);
+    canvas.width  = src.width;
+    canvas.height = src.height;
+    canvas.getContext('2d').drawImage(src, 0, 0);
   }
 
   if (direction) {
     const el  = direction === 'next' ? rightPage : leftPage;
     const cls = direction === 'next' ? 'flipping-r' : 'flipping-l';
     el.classList.add(cls);
-    await new Promise(r => setTimeout(r, 160));
+    await new Promise(r => setTimeout(r, 140));
     el.classList.remove(cls);
   }
 
-  await Promise.all([draw(lNum, canvasL, ctxL, leftPage), draw(rNum, canvasR, ctxR, rightPage)]);
+  await Promise.all([
+    drawToCanvas(lNum, canvasL, leftPage),
+    drawToCanvas(rNum, canvasR, rightPage)
+  ]);
+
   currentSpread = spread;
 
   if (fileName) {
@@ -429,67 +365,74 @@ async function renderSpread(spread, direction) {
   }
 
   pageDisp.textContent = rNum
-    ? 'str. ' + lNum + '–' + rNum + ' / ' + totalPages
+    ? 'str. ' + lNum + '\u2013' + rNum + ' / ' + totalPages
     : 'str. ' + lNum + ' / ' + totalPages;
 
   btnPrev.disabled = currentSpread === 0;
   btnNext.disabled = !rNum || rNum >= totalPages;
   updateZoomLabel();
   rendering = false;
+
+  prefetchAround(currentSpread);
 }
 
-function goToPage(page) { renderSpread(spreadForPage(page), null); }
-
-function nextSpread() {
-  if (rendering) return;
-  const n = currentSpread + 1;
-  const [l] = pagesForSpread(n);
-  if (l && l <= totalPages) renderSpread(n, 'next');
-}
-
-function prevSpread() {
-  if (rendering) return;
-  if (currentSpread > 0) renderSpread(currentSpread - 1, 'prev');
-}
-
-function jumpToPage() {
-  const n = parseInt(jumpInput.value);
-  if (n >= 1 && n <= totalPages) goToPage(n);
-  jumpInput.value = '';
-}
+function goToPage(p) { renderSpread(spreadForPage(p), null); }
+function nextSpread() { if (rendering) return; const n = currentSpread+1; const [l]=pagesForSpread(n); if(l&&l<=totalPages) renderSpread(n,'next'); }
+function prevSpread() { if (rendering) return; if (currentSpread>0) renderSpread(currentSpread-1,'prev'); }
+function jumpToPage() { const n=parseInt(jumpInput.value); if(n>=1&&n<=totalPages) goToPage(n); jumpInput.value=''; }
 
 function changeZoom(d) {
   if (rendering) return;
+  clearCache();
   scale = Math.min(Math.max(scale + d, 0.2), 5);
   updateZoomLabel();
   if (pdfDoc) renderSpread(currentSpread, null);
 }
 
+/* ── Fullscreen ── */
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+}
+document.addEventListener('fullscreenchange', () => {
+  fsBtn.textContent = document.fullscreenElement ? '\u29C4' : '\u26F6';
+  fsBtn.title = document.fullscreenElement ? 'Ukončit celou obrazovku' : 'Celá obrazovka';
+  setTimeout(fitToWindow, 150);
+});
+
+/* ── Share ── */
 function sharePage() {
   navigator.clipboard.writeText(window.location.href).then(() => {
     const t = document.getElementById('toast');
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
+    setTimeout(() => t.classList.remove('show'), 2200);
   });
 }
 
+/* ── Keyboard ── */
 document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSpread();
   if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prevSpread();
+  if (e.key === 'f' || e.key === 'F') toggleFullscreen();
 });
 jumpInput.addEventListener('keydown', e => { if (e.key === 'Enter') jumpToPage(); });
 
-/* klik na levou/pravou polovinu stránky pro listování */
+/* ── Click left/right half to turn page ── */
 viewer.addEventListener('click', e => {
   if (!pdfDoc || rendering) return;
+  if (e.target === jumpInput) return;
   const mid = viewer.clientWidth / 2;
   if (e.clientX > mid) nextSpread(); else prevSpread();
 });
 
+/* ── Resize ── */
 let rTimer;
 window.addEventListener('resize', () => {
   clearTimeout(rTimer);
-  rTimer = setTimeout(fitToWindow, 200);
+  rTimer = setTimeout(fitToWindow, 180);
 });
 </script>
 </body>
