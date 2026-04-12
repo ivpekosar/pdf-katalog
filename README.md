@@ -2,7 +2,7 @@
 
 <div class="overflow-x-auto w-full px-2 mb-6"><table class="min-w-full border-collapse text-sm leading-[1.7] whitespace-normal"><thead class="text-left"><tr><th scope="col" class="text-text-100 border-b-0.5 border-border-300/60 py-2 pr-4 align-top font-bold">Co</th><th scope="col" class="text-text-100 border-b-0.5 border-border-300/60 py-2 pr-4 align-top font-bold">URL</th></tr></thead><tbody><tr><td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">Otevřít katalog</td><td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top"><code class="bg-text-200/5 border border-0.5 border-border-300 text-danger-000 whitespace-pre-wrap rounded-[0.4rem] px-1 py-px text-[0.9rem]">?file=Katalog_obklady_Kospan_2026_01_CZ_lamely</code></td></tr><tr><td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">Konkrétní strana</td><td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top"><code class="bg-text-200/5 border border-0.5 border-border-300 text-danger-000 whitespace-pre-wrap rounded-[0.4rem] px-1 py-px text-[0.9rem]">?file=Katalog_obklady_Kospan_2026_01_CZ_lamely&amp;page=15</code></td></tr><tr><td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top">Další katalog</td><td class="border-b-0.5 border-border-300/30 py-2 pr-4 align-top"><code class="bg-text-200/5 border border-0.5 border-border-300 text-danger-000 whitespace-pre-wrap rounded-[0.4rem] px-1 py-px text-[0.9rem]">?file=jiny-katalog</code></td></tr></tbody></table></div>
 
-https://ivpekosar.github.io/pdf-katalog/?file=Katalog_obklady_Kospan_2026_01_CZ_lamely
+nic nevidim https://ivpekosar.ithub.io/pdf-katalog/?file=Katalog_obklady_Kospan_2026_01_CZ_lamely
 
 
 ## Advantages
