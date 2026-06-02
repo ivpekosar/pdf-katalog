@@ -221,8 +221,10 @@ async function initPdf() {
 
   let buf;
   try {
-    const pdfPath =
-    'katalog/' +
+    const BASE_URL = 'https://www.ivpeko.cz/_obchody/7301/soubory/katalog/';
+
+const pdfPath =
+    BASE_URL +
     (category ? category + '/' : '') +
     fileName +
     '.pdf';
