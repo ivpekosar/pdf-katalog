@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Katalogy — Ivpeko</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --wood-dark: #6b4c35;
+    --wood-mid: #8b6347;
+    --wood-light: #c4956a;
+    --wood-shelf: #a67c5b;
+    --wood-bg: #f5ede3;
+    --wood-grain: #d4a97a;
+    --accent: #c05a2a;
+    --accent-light: #e8763a;
+    --text-dark: #2a1a0e;
+    --text-mid: #5c3d22;
+    --text-light: #9a7355;
+    --shadow: rgba(60,30,10,0.18);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #ede0d0;
+    background-image:
+      repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(180,140,90,0.06) 40px, rgba(180,140,90,0.06) 41px),
+      repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(180,140,90,0.06) 40px, rgba(180,140,90,0.06) 41px);
+    min-height: 100vh;
+    padding: 2rem 1.5rem 4rem;
+    color: var(--text-dark);
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    color: var(--wood-dark);
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+  }
+
+  header p {
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .divider {
+    width: 60px;
+    height: 2px;
+    background: var(--accent);
+    margin: 1rem auto 0;
+    border-radius: 2px;
+  }
+
+  /* CATEGORY TABS */
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+  }
+
+  .tab-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: 1.5px solid var(--wood-mid);
+    background: transparent;
+    color: var(--wood-mid);
+    padding: 0.5rem 1.4rem;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab-btn:hover {
+    background: var(--wood-mid);
+    color: #fff;
+  }
+
+  .tab-btn.active {
+    background: var(--wood-dark);
+    border-color: var(--wood-dark);
+    color: #fff;
+  }
+
+  /* BOOKCASE */
+  .bookcase {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: var(--wood-dark);
+    border-radius: 6px;
+    padding: 18px 18px 22px;
+    box-shadow:
+      0 8px 32px rgba(60,30,10,0.22),
+      inset 0 2px 0 rgba(255,255,255,0.08),
+      inset 0 -2px 0 rgba(0,0,0,0.25);
+    background-image:
+      repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(255,255,255,0.025) 60px, rgba(255,255,255,0.025) 62px);
+  }
+
+  /* SHELF ROW */
+  .shelf {
+    position: relative;
+    background: #f0e4d0;
+    background-image:
+      repeating-linear-gradient(180deg, transparent, transparent 3px, rgba(150,100,50,0.07) 3px, rgba(150,100,50,0.07) 4px),
+      repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(150,100,60,0.04) 8px, rgba(150,100,60,0.04) 9px);
+    border-radius: 3px;
+    padding: 28px 20px 14px;
+    margin-bottom: 16px;
+  }
+
+  .shelf::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 14px;
+    background: linear-gradient(180deg, var(--wood-shelf) 0%, var(--wood-dark) 100%);
+    border-radius: 0 0 3px 3px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  /* CATALOG GRID */
+  .catalog-grid {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    padding-bottom: 8px;
+  }
+
+  /* BOOK / CATALOG ITEM */
+  .catalog-item {
+    text-decoration: none;
+    color: inherit;
+    flex: 0 0 auto;
+    width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.2s ease;
+  }
+
+  .catalog-item:hover {
+    transform: translateY(-6px);
+  }
+
+  .catalog-item:hover .book-cover {
+    box-shadow: 0 14px 28px rgba(60,30,10,0.35), 4px 0 0 rgba(0,0,0,0.15);
+  }
+
+  .book-cover {
+    width: 100px;
+    height: 138px;
+    border-radius: 2px 6px 6px 2px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 4px 4px 14px rgba(60,30,10,0.25), 2px 0 0 rgba(0,0,0,0.12);
+    transition: box-shadow 0.2s ease;
+    background: #d4c4a8;
+  }
+
+  .book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Placeholder cover */
+  .cover-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    gap: 6px;
+    text-align: center;
+  }
+
+  .cover-placeholder .brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #fff;
+  }
+
+  .cover-placeholder .year {
+    font-size: 10px;
+    font-weight: 300;
+    opacity: 0.8;
+    color: #fff;
+    letter-spacing: 0.1em;
+  }
+
+  .cover-placeholder .cat-badge {
+    position: absolute;
+    bottom: 8px;
+    right: 6px;
+    font-size: 9px;
+    letter-spacing: 0.05em;
+    background: rgba(0,0,0,0.25);
+    color: #fff;
+    padding: 2px 5px;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+
+  .spine {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+    background: rgba(0,0,0,0.15);
+  }
+
+  .catalog-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-mid);
+    text-align: center;
+    line-height: 1.3;
+    width: 110px;
+  }
+
+  /* Category section label */
+  .shelf-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--wood-dark);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .shelf-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(107,76,53,0.2);
+  }
+
+  /* EMPTY STATE */
+  .empty-shelf {
+    padding: 1.5rem 1rem;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-style: italic;
+  }
+
+  /* HIDDEN */
+  .category-section { display: none; }
+  .category-section.visible { display: block; }
+
+  /* ADD BUTTON hint */
+  .add-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-light);
+    font-style: italic;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    margin-top: 2.5rem;
+    font-size: 0.78rem;
+    color: var(--text-light);
+    letter-spacing: 0.05em;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .catalog-grid { gap: 12px; }
+    .catalog-item { width: 95px; }
+    .book-cover { width: 80px; height: 112px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Katalogy</h1>
+  <p>Ivan Kosar &mdash; Ivpeko</p>
+  <div class="divider"></div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" data-cat="all">Vše</button>
+  <button class="tab-btn" data-cat="podlahy">Podlahy</button>
+  <button class="tab-btn" data-cat="dvere">Dveře</button>
+  <button class="tab-btn" data-cat="boxy">Boxy na nářadí</button>
+</div>
+
+<div class="bookcase">
+
+  <!-- PODLAHY -->
+  <div class="category-section visible" data-section="podlahy">
+    <div class="shelf">
+      <div class="shelf-label">Katalogy podlah</div>
+      <div class="catalog-grid">
+
+        <a class="catalog-item" href="#" title="Otevřít katalog Barlinek 2024">
+          <div class="book-cover" style="background: linear-gradient(145deg, #3b6b3b, #2a4a2a);">
+            <div class="spine"></div>
+            <div class="cover-placeholder">
+              <div class="brand">Barlinek</div>
+              <div class="year">Katalog 2024</div>
+              <span class="cat-badge">Podlahy</span>
+            </div>
+          </div>
+          <span class="catalog-label">Barlinek 2024</span>
+        </a>
+
+        <a class="catalog-item" href="#" title="Otevřít katalog Tarkett">
+          <div class="book-cover" style="background: linear-gradient(145deg, #1a4a7a, #0d2e50);">
+            <div class="spine"></div>
+            <div class="cover-placeholder">
+              <div class="brand">Tarkett</div>
+              <div class="year">Kolekce 2024</div>
+              <span class="cat-badge">Podlahy</span>
+            </div>
+          </div>
+          <span class="catalog-label">Tarkett 2024</span>
+        </a>
+
+        <a class="catalog-item" href="#" title="Otevřít katalog Quick-Step">
+          <div class="book-cover" style="background: linear-gradient(145deg, #7a3a1a, #4a2010);">
+            <div class="spine"></div>
+            <div class="cover-placeholder">
+              <div class="brand">Quick-Step</div>
+              <div class="year">Katalog 2024</div>
+              <span class="cat-badge">Podlahy</span>
+            </div>
+          </div>
+          <span class="catalog-label">Quick-Step 2024</span>
+        </a>
+
+        <!-- Prázdný slot — sem přidáte další katalog -->
+        <a class="catalog-item" href="#" title="Přidat katalog">
+          <div class="book-cover" style="background: rgba(107,76,53,0.12); border: 2px dashed rgba(107,76,53,0.3); box-shadow: none;">
+            <div class="cover-placeholder">
+              <div class="brand" style="color: var(--text-light); font-size: 11px; font-family: 'DM Sans', sans-serif; font-weight: 400;">+ přidat katalog</div>
+            </div>
+          </div>
+          <span class="catalog-label" style="color:var(--text-light);">Nový katalog</span>
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- DVERE -->
+  <div class="category-section visible" data-section="dvere">
+    <div class="shelf">
+      <div class="shelf-label">Katalogy dveří</div>
+      <div class="catalog-grid">
+
+        <a class="catalog-item" href="#" title="Otevřít katalog Solodoor">
+          <div class="book-cover" style="background: linear-gradient(145deg, #4a3060, #2a1840);">
+            <div class="spine"></div>
+            <div class="cover-placeholder">
+              <div class="brand">Solodoor</div>
+              <div class="year">Katalog 2024</div>
+              <span class="cat-badge">Dveře</span>
+            </div>
+          </div>
+          <span class="catalog-label">Solodoor 2024</span>
+        </a>
+
+        <a class="catalog-item" href="#" title="Otevřít katalog Erkado">
+          <div class="book-cover" style="background: linear-gradient(145deg, #2a2a2a, #111);">
+            <div class="spine"></div>
+            <div class="cover-placeholder">
+              <div class="brand">Erkado</div>
+              <div class="year">Basic Line 2024</div>
+              <span class="cat-badge">Dveře</span>
+            </div>
+          </div>
+          <span class="catalog-label">Erkado Basic</span>
+        </a>
+
+        <a class="catalog-item" href="#" title="Otevřít katalog Porta">
+          <div class="book-cover" style="background: linear-gradient(145deg, #1a5a4a, #0d3530);">
+            <div class="spine"></div>
+            <div class="cover-placeholder">
+              <div class="brand">Porta</div>
+              <div class="year">Akční katalog</div>
+              <span class="cat-badge">Dveře</span>
+            </div>
+          </div>
+          <span class="catalog-label">Porta Doors</span>
+        </a>
+
+        <a class="catalog-item" href="#" title="Otevřít katalog DRE">
+          <div class="book-cover" style="background: linear-gradient(145deg, #5a1a1a, #3a0d0d);">
+            <div class="spine"></div>
+            <div class="cover-placeholder">
+              <div class="brand">DRE</div>
+              <div class="year">Handdoors 2024</div>
+              <span class="cat-badge">Dveře</span>
+            </div>
+          </div>
+          <span class="catalog-label">DRE Handdoors</span>
+        </a>
+
+        <a class="catalog-item" href="#" title="Otevřít katalog Novosystém">
+          <div class="book-cover" style="background: linear-gradient(145deg, #1a3a5a, #0d2035);">
+            <div class="spine"></div>
+            <div class="cover-placeholder">
+              <div class="brand">Novosystém</div>
+              <div class="year">Katalog 2024</div>
+              <span class="cat-badge">Dveře</span>
+            </div>
+          </div>
+          <span class="catalog-label">Novosystém</span>
+        </a>
+
+        <a class="catalog-item" href="#" title="Přidat katalog">
+          <div class="book-cover" style="background: rgba(107,76,53,0.12); border: 2px dashed rgba(107,76,53,0.3); box-shadow: none;">
+            <div class="cover-placeholder">
+              <div class="brand" style="color: var(--text-light); font-size: 11px; font-family: 'DM Sans', sans-serif; font-weight: 400;">+ přidat katalog</div>
+            </div>
+          </div>
+          <span class="catalog-label" style="color:var(--text-light);">Nový katalog</span>
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- BOXY -->
+  <div class="category-section visible" data-section="boxy">
+    <div class="shelf">
+      <div class="shelf-label">Katalogy boxů na nářadí</div>
+      <div class="catalog-grid">
+
+        <a class="catalog-item" href="#" title="Otevřít katalog Stanley">
+          <div class="book-cover" style="background: linear-gradient(145deg, #c05a00, #7a3a00);">
+            <div class="spine"></div>
+            <div class="cover-placeholder">
+              <div class="brand">Stanley</div>
+              <div class="year">FatMax 2024</div>
+              <span class="cat-badge">Boxy</span>
+            </div>
+          </div>
+          <span class="catalog-label">Stanley FatMax</span>
+        </a>
+
+        <a class="catalog-item" href="#" title="Otevřít katalog Milwaukee">
+          <div class="book-cover" style="background: linear-gradient(145deg, #c00000, #7a0000);">
+            <div class="spine"></div>
+            <div class="cover-placeholder">
+              <div class="brand">Milwaukee</div>
+              <div class="year">PACKOUT 2024</div>
+              <span class="cat-badge">Boxy</span>
+            </div>
+          </div>
+          <span class="catalog-label">Milwaukee Packout</span>
+        </a>
+
+        <a class="catalog-item" href="#" title="Přidat katalog">
+          <div class="book-cover" style="background: rgba(107,76,53,0.12); border: 2px dashed rgba(107,76,53,0.3); box-shadow: none;">
+            <div class="cover-placeholder">
+              <div class="brand" style="color: var(--text-light); font-size: 11px; font-family: 'DM Sans', sans-serif; font-weight: 400;">+ přidat katalog</div>
+            </div>
+          </div>
+          <span class="catalog-label" style="color:var(--text-light);">Nový katalog</span>
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.bookcase -->
+
+<div class="add-hint">
+  Nahraďte href="#" skutečnými URL odkazů na PDF katalogy
+</div>
+
+<footer>
+  &copy; 2024 Ivan Kosar — Ivpeko &nbsp;|&nbsp; Katalogy pro zákazníky
+</footer>
+
+<script>
+  const tabs = document.querySelectorAll('.tab-btn');
+  const sections = document.querySelectorAll('.category-section');
+
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.dataset.cat;
+
+      sections.forEach(sec => {
+        if (cat === 'all' || sec.dataset.section === cat) {
+          sec.classList.add('visible');
+        } else {
+          sec.classList.remove('visible');
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
