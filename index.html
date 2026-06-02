@@ -228,13 +228,14 @@ const pdfPath =
     (category ? category + '/' : '') +
     fileName +
     '.pdf';
+   console.log("PDF PATH:", pdfPath);
 const r = await fetch(pdfPath);
 
 if (!r.ok) {
     throw new Error('HTTP ' + r.status + ' – ' + pdfPath + ' nenalezen');
 }
 
-const buf = await r.arrayBuffer();   
+const r = await fetch(pdfPath);
     const chunks = [];
     let loaded = 0;
     while (true) {
@@ -254,8 +255,17 @@ const buf = await r.arrayBuffer();
   }
 
   setProgress(65);
-const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buf) }).promise;  
-  pdfDoc = pdf;
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const loadingTask = pdfjsLib.getDocument({
+  data: new Uint8Array(buf),
+  disableRange: true,
+  disableStream: true,
+  isEvalSupported: false
+});
+
+const pdf = await loadingTask.promise;  pdfDoc = pdf;
   totalPages = pdf.numPages;
   jumpInput.max = totalPages;
 
