@@ -155,7 +155,7 @@
   <div id="no-file">
     <h2>Žádný katalog nebyl zadán</h2>
     <p>Použij URL ve formátu:</p>
-    <code>?file=nazev-katalogu</code>
+    <code>?kategorie=dvere&file=nazev-katalogu</code>
     <p style="margin-top:0.4rem;font-size:0.8rem">PDF musí být ve složce <code>katalog/</code></p>
     <p style="margin-top:0.6rem">Přímý odkaz na stranu:</p>
     <code>?file=nazev&amp;page=15</code>
@@ -176,9 +176,10 @@ function loadPdfJs(cb) {
   document.head.appendChild(s);
 }
 
-const params    = new URLSearchParams(window.location.search);
-const fileName  = params.get('file');
-const startPage = parseInt(params.get('page')) || 1;
+const params     = new URLSearchParams(window.location.search);
+const category   = params.get('kategorie') || '';
+const fileName   = params.get('file');
+const startPage  = parseInt(params.get('page')) || 1;
 
 const canvasL   = document.getElementById('canvas-left');
 const canvasR   = document.getElementById('canvas-right');
@@ -220,8 +221,19 @@ async function initPdf() {
 
   let buf;
   try {
-    const r = await fetch('katalog/' + fileName + '.pdf');
-    if (!r.ok) throw new Error('HTTP ' + r.status + ' – katalog/' + fileName + '.pdf nenalezen');
+    const pdfPath =
+    'katalog/' +
+    (category ? category + '/' : '') +
+    fileName +
+    '.pdf';
+
+const r = await fetch(pdfPath);
+
+if (!r.ok) {
+    throw new Error(
+        'HTTP ' + r.status + ' – ' + pdfPath + ' nenalezen'
+    );
+}
     const total = parseInt(r.headers.get('content-length')) || 0;
     const reader = r.body.getReader();
     const chunks = [];
@@ -360,7 +372,12 @@ async function renderSpread(spread, direction) {
   if (fileName) {
     const url = new URL(window.location);
     url.searchParams.set('file', fileName);
-    url.searchParams.set('page', lNum || rNum);
+
+if (category) {
+    url.searchParams.set('kategorie', category);
+}
+
+url.searchParams.set('page', lNum || rNum);
     window.history.replaceState({}, '', url);
   }
 
