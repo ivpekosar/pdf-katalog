@@ -228,16 +228,13 @@ const pdfPath =
     (category ? category + '/' : '') +
     fileName +
     '.pdf';
-
 const r = await fetch(pdfPath);
 
 if (!r.ok) {
-    throw new Error(
-        'HTTP ' + r.status + ' – ' + pdfPath + ' nenalezen'
-    );
+    throw new Error('HTTP ' + r.status + ' – ' + pdfPath + ' nenalezen');
 }
-    const total = parseInt(r.headers.get('content-length')) || 0;
-    const reader = r.body.getReader();
+
+const buf = await r.arrayBuffer();   
     const chunks = [];
     let loaded = 0;
     while (true) {
@@ -257,7 +254,7 @@ if (!r.ok) {
   }
 
   setProgress(65);
-  const pdf = await pdfjsLib.getDocument({ data: buf, disableStream: false }).promise;
+const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buf) }).promise;  
   pdfDoc = pdf;
   totalPages = pdf.numPages;
   jumpInput.max = totalPages;
