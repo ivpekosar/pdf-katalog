@@ -64,6 +64,7 @@
   }
   .tb-btn:hover:not(:disabled) { background: var(--accent); color: var(--bg); border-color: var(--accent); }
   .tb-btn:disabled { opacity: 0.28; cursor: default; }
+  body.show-links #btn-links { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 
   #page-display { font-size: 0.76rem; color: var(--muted); min-width: 95px; text-align: center; white-space: nowrap; flex-shrink: 0; }
 
@@ -73,7 +74,7 @@
   .zoom-group span { font-size: 0.73rem; color: var(--muted); min-width: 38px; text-align: center; }
 
   .jump-group { display: flex; align-items: center; gap: 0.25rem; font-size: 0.76rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
-  .jump-group input { width: 42px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; color: var(--text); padding: 0 0.3rem; font-size: 0.78rem; text-align: center; font-family: inherit; height: 26px; }
+  .jump-group input { width: 80px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; color: var(--text); padding: 0 0.3rem; font-size: 0.78rem; text-align: center; font-family: inherit; height: 26px; }
   .jump-group input:focus { outline: none; border-color: var(--accent); }
   .jump-group button { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; color: var(--accent); padding: 0 0.5rem; height: 26px; cursor: pointer; font-size: 0.76rem; transition: all 0.13s; }
   .jump-group button:hover { background: var(--accent); color: var(--bg); }
@@ -81,9 +82,15 @@
   /* ── VIEWER ── */
   #viewer { flex: 1; overflow: auto; display: flex; align-items: flex-start; justify-content: center; padding: 1rem; min-height: 0; }
   #page-container { display: flex; gap: 0; align-items: flex-start; flex-shrink: 0; }
-  .page-side { background: white; box-shadow: 0 4px 28px rgba(0,0,0,0.6); overflow: hidden; flex-shrink: 0; }
+  .page-side { position: relative; background: white; box-shadow: 0 4px 28px rgba(0,0,0,0.6); overflow: hidden; flex-shrink: 0; }
   .page-side canvas { display: block; }
   .spine { width: 5px; background: linear-gradient(to right, rgba(0,0,0,0.25), rgba(0,0,0,0.02)); flex-shrink: 0; align-self: stretch; }
+
+  /* ── KLIKACÍ ODKAZY NA STRÁNKÁCH ── */
+  .hl { position: absolute; inset: 0; pointer-events: none; }
+  .hotspot { position: absolute; display: block; border-radius: 3px; pointer-events: auto; cursor: pointer; transition: background 0.15s; }
+  .hotspot:hover { background: rgba(200,169,110,0.28); outline: 2px solid var(--accent); }
+  body.show-links .hotspot { background: rgba(200,169,110,0.22); outline: 2px dashed var(--accent); }
 
   /* ── STATES ── */
   #loading, #no-file { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.85rem; color: var(--muted); padding: 4rem 2rem; width: 100%; text-align: center; }
@@ -147,12 +154,13 @@
   <button class="tb-btn" onclick="fitToWindow()">&#8861; Fit</button>
   <div class="tb-sep"></div>
   <div class="jump-group">
-    <span>Str.</span>
-    <input type="number" id="jump-input" min="1" placeholder="č.">
-    <button onclick="jumpToPage()">Jdi</button>
+    <span>Přejít na stranu:</span>
+    <input type="number" id="jump-input" min="1" placeholder="strana.">
+    <button onclick="jumpToPage()">Přejít</button>
   </div>
   <div class="tb-sep"></div>
   <button class="tb-btn" onclick="sharePage()">&#10548; Sdílet</button>
+  <button class="tb-btn" id="btn-links" style="display:none" onclick="toggleLinks()" title="Zvýraznit klikací odkazy na e-shop">&#128279; Odkazy</button>
 </div>
 
 <div id="toast">Odkaz zkopírován!</div>
@@ -169,9 +177,9 @@
     <code>?file=nazev&amp;page=15</code>
   </div>
   <div id="page-container" style="display:none">
-    <div class="page-side" id="left-page"><canvas id="canvas-left"></canvas></div>
+    <div class="page-side" id="left-page"><canvas id="canvas-left"></canvas><div class="hl" id="layer-left"></div></div>
     <div class="spine"></div>
-    <div class="page-side" id="right-page"><canvas id="canvas-right"></canvas></div>
+    <div class="page-side" id="right-page"><canvas id="canvas-right"></canvas><div class="hl" id="layer-right"></div></div>
   </div>
 </div>
 
@@ -194,11 +202,14 @@ const ctxL      = canvasL.getContext('2d');
 const ctxR      = canvasR.getContext('2d');
 const leftPage  = document.getElementById('left-page');
 const rightPage = document.getElementById('right-page');
+const layerL    = document.getElementById('layer-left');
+const layerR    = document.getElementById('layer-right');
 const container = document.getElementById('page-container');
 const loading   = document.getElementById('loading');
 const noFile    = document.getElementById('no-file');
 const btnPrev   = document.getElementById('btn-prev');
 const btnNext   = document.getElementById('btn-next');
+const btnLinks  = document.getElementById('btn-links');
 const pageDisp  = document.getElementById('page-display');
 const jumpInput = document.getElementById('jump-input');
 const zoomLabel = document.getElementById('zoom-label');
@@ -209,6 +220,7 @@ const fsBtn     = document.getElementById('fs-btn');
 let pdfDoc = null, currentSpread = 0, scale = 1, totalPages = 0;
 let rendering = false, nativePdfW = 0, nativePdfH = 0;
 let pageCache = {}; /* rendered page cache */
+let links = {};     /* klikací odkazy ze souboru .links.json */
 
 if (!fileName) {
   loading.style.display = 'none';
@@ -257,6 +269,15 @@ async function initPdf() {
   totalPages = pdf.numPages;
   jumpInput.max = totalPages;
 
+  /* odkazy na e-shop (soubor je volitelný, bez něj katalog funguje jako dřív) */
+  try {
+    const lr = await fetch('katalog/' + fileName + '.links.json');
+    if (lr.ok) {
+      links = await lr.json();
+      if (Object.keys(links).length) btnLinks.style.display = 'flex';
+    }
+  } catch(e) { links = {}; }
+
   const p1 = await pdf.getPage(1);
   const vp = p1.getViewport({ scale: 1 });
   nativePdfW = vp.width;
@@ -276,6 +297,31 @@ async function initPdf() {
   /* prefetch next spread in background */
   prefetchAround(currentSpread);
 }
+
+/* ── Klikací odkazy ── */
+function drawLinks(num, layer) {
+  layer.innerHTML = '';
+  if (!num) return;
+  (links[num] || []).forEach(l => {
+    const a = document.createElement('a');
+    a.className = 'hotspot';
+    a.href = l.url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.title = l.url;
+    a.style.left   = l.x + '%';
+    a.style.top    = l.y + '%';
+    a.style.width  = l.w + '%';
+    a.style.height = l.h + '%';
+    a.addEventListener('click', ev => {
+      ev.stopPropagation(); /* nelistovat, jen otevřít odkaz */
+      gtag('event', 'click_catalog_link', { catalog_name: fileName, page_number: num, link_url: l.url });
+    });
+    layer.appendChild(a);
+  });
+}
+
+function toggleLinks() { document.body.classList.toggle('show-links'); }
 
 /* ── Page cache & prefetch ── */
 async function getRenderedPage(num) {
@@ -364,6 +410,9 @@ async function renderSpread(spread, direction) {
     drawToCanvas(rNum, canvasR, rightPage)
   ]);
 
+  drawLinks(lNum, layerL);
+  drawLinks(rNum, layerR);
+
   currentSpread = spread;
 
   if (fileName) {
@@ -374,8 +423,8 @@ async function renderSpread(spread, direction) {
   }
 
   pageDisp.textContent = rNum
-    ? 'str. ' + lNum + '\u2013' + rNum + ' / ' + totalPages
-    : 'str. ' + lNum + ' / ' + totalPages;
+    ? 'Strana ' + lNum + '\u2013' + rNum + ' z ' + totalPages
+    : 'Strana ' + lNum + ' z ' + totalPages;
 
   btnPrev.disabled = currentSpread === 0;
   btnNext.disabled = !rNum || rNum >= totalPages;
@@ -433,6 +482,7 @@ jumpInput.addEventListener('keydown', e => { if (e.key === 'Enter') jumpToPage()
 viewer.addEventListener('click', e => {
   if (!pdfDoc || rendering) return;
   if (e.target === jumpInput) return;
+  if (e.target.closest && e.target.closest('.hotspot')) return;
   const mid = viewer.clientWidth / 2;
   if (e.clientX > mid) nextSpread(); else prevSpread();
 });
